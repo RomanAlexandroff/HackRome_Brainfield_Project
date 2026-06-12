@@ -28,25 +28,25 @@
 void  setup(void)
 {
     #ifdef DEBUG
-        ft_serial_init();
+        serial_init();
     #endif
-    ft_spiffs_init();
-    ft_wifi_init();                                 // sets up the Wi-Fi module but does not connect
-    ft_adc_init();
-    ft_temp_sensor_init();
-    ft_ota_init();
+    spiffs_init();
+    wifi_init();                                 // sets up the Wi-Fi module but does not connect
+    adc_init();
+    temp_sensor_init();
+    ota_init();
 }
 
 void  loop(void)
 {
-    ft_ota_waiting_loop();
-    ft_temperature_check();
-    ft_battery_check();
-    ft_moisture_check();
-    ft_react();
-    ft_get_time();
-    ft_notify_user();
-    ft_telegram_check();
-    ft_go_to_sleep(ft_time_till_wakeup());
+    ota_waiting_loop();
+    temperature_check();
+    battery_check();
+    moisture_check();
+    react();
+    get_time();
+    notify_user();
+    telegram_check();
+    go_to_sleep(time_till_wakeup());
 }
  

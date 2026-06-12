@@ -17,7 +17,7 @@
 #ifndef OTA_H
 # define OTA_H
 
-void ft_ota_init(void)
+void ota_init(void)
 {
     if (rtc_g.ota)
     {
@@ -26,7 +26,7 @@ void ft_ota_init(void)
         char    fullhostname[26] = "Flower_Happiness_Detector";
         while (got_connection != WL_CONNECTED && i <= 5)
         {
-            got_connection = ft_wifi_connect();
+            got_connection = wifi_connect();
             i++;
             DEBUG_PRINTF("\n[OTA] Establishing Wi-Fi connection, try #%d\n", i);
             delay(1000);
@@ -50,7 +50,7 @@ void ft_ota_init(void)
             .onEnd([]() {
                 DEBUG_PRINTF("\n[OTA] End", "");
                 rtc_g.ota = false;
-                ft_write_spiffs_file("/ota.txt", CLOSED);
+                write_spiffs_file("/ota.txt", CLOSED);
                 bot.sendMessage(rtc_g.chat_id, "Successfully updated!", "");
             })
             .onProgress([](unsigned int progress, unsigned int total) {
@@ -71,7 +71,7 @@ void ft_ota_init(void)
     }
 }
 
-void ft_ota_waiting_loop(void)
+void ota_waiting_loop(void)
 {
     if (rtc_g.ota)
     {
@@ -84,7 +84,7 @@ void ft_ota_waiting_loop(void)
             delay(300);
         }
         rtc_g.ota = false;
-        ft_write_spiffs_file("/ota.txt", CLOSED);
+        write_spiffs_file("/ota.txt", CLOSED);
         bot.sendMessage(rtc_g.chat_id, "OTA Update port closed", "");
         DEBUG_PRINTF("\n[OTA] OTA Update port closed", "");
     }

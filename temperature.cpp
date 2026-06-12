@@ -12,7 +12,7 @@
 
 #include "Flower_Happiness_Detector.h"
 
-static void ft_temperature_calibration(void)
+static void temperature_calibration(void)
 {
     int8_t  i;
     float   temperature;
@@ -28,7 +28,7 @@ static void ft_temperature_calibration(void)
     }
 }
 
-static void ft_temperature_sensor(int8_t status)
+static void temperature_sensor(int8_t status)
 {
     if (status == ON)
         temp_sensor_start();
@@ -36,7 +36,7 @@ static void ft_temperature_sensor(int8_t status)
         temp_sensor_stop();
 }
 
-void  ft_temperature_check(void)
+void  temperature_check(void)
 {
     int8_t  i;
     float   total;
@@ -45,8 +45,8 @@ void  ft_temperature_check(void)
     i = 0;
     total = 0;
     temperature = 0;
-    ft_temperature_sensor(ON);
-    ft_temperature_calibration();
+    temperature_sensor(ON);
+    temperature_calibration();
     while (i < 5)
     {
         temp_sensor_read_celsius(&temperature);
@@ -54,7 +54,7 @@ void  ft_temperature_check(void)
         delay(500);
         i++;
     }
-    ft_temperature_sensor(OFF);
+    temperature_sensor(OFF);
     rtc_g.temp = total / i;
     DEBUG_PRINTF("\n[TEMPERATURE SENSOR] Current temperature: %.2f°C\n", rtc_g.temp);
 }

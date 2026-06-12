@@ -76,12 +76,12 @@ It's just a ReadMe
         # define ACTIVE "1"                                     // будет означать включение
         # define CLOSED "0"                                     // и выключение цикла ОТА
   - в header файле декларации функций добавляем в следующем виде:
-        inline void      ft_ota_init(void) __attribute__((always_inline));
-        inline void      ft_ota_waiting_loop(void) __attribute__((always_inline));
-        void IRAM_ATTR   ft_spiffs_init(void);
-        short IRAM_ATTR  ft_write_spiffs_file(const char* file_name, String input);
-        String IRAM_ATTR ft_read_spiffs_file(const char* file_name);
-        void IRAM_ATTR   ft_files_restore(void);
+        inline void       ota_init(void) __attribute__((always_inline));
+        inline void       ota_waiting_loop(void) __attribute__((always_inline));
+        void IRAM_ATTR    spiffs_init(void);
+        short IRAM_ATTR   write_spiffs_file(const char* file_name, String input);
+        String IRAM_ATTR  read_spiffs_file(const char* file_name);
+        void IRAM_ATTR    files_restore(void);
   - в самом конце header файла, ниже всех функций вставляем header файл с телами функций ОТА
         # include "ota.h"                                       // ДОЛЖНО НАХОДИТЬСЯ НИЖЕ ДЕКЛАРАЦИЙ ВСЕХ ФУНКЦИЙ!
   - в файле globals.h нужно будет создать:
@@ -97,10 +97,10 @@ It's just a ReadMe
         # define SSID1         "между_кавычек_вставить_название_сети_WiFi"
         # define PASSWORD1     "между_кавычек_вставить_пароль_сети_WiFi"
 Что насчёт кода:
-  - в главном файле .ino расставляем функции ft_spiffs_init(), ft_ota_init(), ft_ota_waiting_loop() и
-    ft_telegram_check() так, как в этом проекте;
+  - в главном файле .ino расставляем функции  spiffs_init(),  ota_init(),  ota_waiting_loop() и
+     telegram_check() так, как в этом проекте;
   - целиком копируем себе файл file_system.cpp - нужен весь код;
-  - из файла initialisations.cpp копируем функции ft_spiffs_init(), ft_wifi_init() и ft_wifi_connect();
+  - из файла initialisations.cpp копируем функции  spiffs_init(),  wifi_init() и  wifi_connect();
   - целиком копируем себе файл telegram_bot.cpp - нужен весь код;
   - целиком копируем себе файл ota.h - нужен весь код, можно поменять название устройства.
 

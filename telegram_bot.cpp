@@ -12,7 +12,7 @@
 
 #include "Flower_Happiness_Detector.h"
 
-static void ft_reply_machine(String text)
+static void reply_machine(String text)
 {
     String      message;
 
@@ -23,7 +23,7 @@ static void ft_reply_machine(String text)
         message += ", Battery state: " + String(rtc_g.battery);
         message += ", Current core temperature: " + String(rtc_g.temp) + "°C";
         message += ", Current moisture evaluation: " + String(rtc_g.moisture);
-        message += " which corresponds to " + String(ft_how_moist()) + "%";
+        message += " which corresponds to " + String(how_moist()) + "%";
         message += ", Software version " + String(SOFTWARE_VERSION);
         bot.sendMessage(rtc_g.chat_id, message, "");
         message.clear();
@@ -33,13 +33,13 @@ static void ft_reply_machine(String text)
     {
         if (rtc_g.ota == false)
         {
-            ft_write_spiffs_file("/ota.txt", ACTIVE);
+            write_spiffs_file("/ota.txt", ACTIVE);
             rtc_g.reboot = true;
         }
         else
         {
             rtc_g.ota = false;
-            ft_write_spiffs_file("/ota.txt", CLOSED);
+            write_spiffs_file("/ota.txt", CLOSED);
             rtc_g.reboot = false;
         }
         return;
@@ -59,7 +59,7 @@ static void ft_reply_machine(String text)
     }
 }
 
-static void  ft_new_messages(short message_count)
+static void  new_messages(short message_count)
 {
     uint8_t i;
     String  text;
@@ -71,17 +71,17 @@ static void  ft_new_messages(short message_count)
     {
         DEBUG_PRINTF("[TELEGRAM BOT] Handling loop iteration #%d\n", i + 1);
         rtc_g.chat_id = String(bot.messages[i].chat_id);
-        ft_write_spiffs_file("/chat_id.txt", rtc_g.chat_id);
+        write_spiffs_file("/chat_id.txt", rtc_g.chat_id);
         text = bot.messages[i].text;
         rtc_g.from_name = bot.messages[i].from_name;
         DEBUG_PRINTF("\n[TELEGRAM BOT] %s says: ", rtc_g.from_name.c_str());
         DEBUG_PRINTF("%s\n\n", text.c_str());
-        ft_reply_machine(text);
+        reply_machine(text);
         i++;
     }
 }
 
-void IRAM_ATTR  ft_telegram_check(void)
+void IRAM_ATTR  telegram_check(void)
 {
     uint8_t i;
     uint8_t got_connection;
@@ -91,7 +91,7 @@ void IRAM_ATTR  ft_telegram_check(void)
     got_connection = 0;
     while (got_connection != WL_CONNECTED && i <= 5)
     {
-        got_connection = ft_wifi_connect();
+        got_connection = wifi_connect();
         i++;
         DEBUG_PRINTF("\n[TELEGRAM BOT] Establishing Wi-Fi connection, try #%d\n", i);
         delay(1000);
@@ -106,7 +106,7 @@ void IRAM_ATTR  ft_telegram_check(void)
         message_count = bot.getUpdates(bot.last_message_received + 1);
         while (message_count)
         {
-            ft_new_messages(message_count);
+            new_messages(message_count);
             message_count = bot.getUpdates(bot.last_message_received + 1);
         }
     }

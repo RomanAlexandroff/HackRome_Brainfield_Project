@@ -12,7 +12,7 @@
 
 #include "Flower_Happiness_Detector.h"
 
-void  ft_go_to_sleep(uint64_t time_in_millis)
+void  go_to_sleep(uint64_t time_in_millis)
 {
     secured_client.stop();
     DEBUG_PRINTF("The device was running for %d second(s) this time\n", (millis() / 1000));

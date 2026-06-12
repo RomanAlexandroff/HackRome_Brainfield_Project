@@ -12,14 +12,14 @@
 
 #include "Flower_Happiness_Detector.h"
 
-void  ft_low_battery_handle(void)
+void  low_battery_handle(void)
 {
     DEBUG_PRINTF("\n[BATTERY] Low battery! Cannot proceed work. Need charging\n", "");
     bot.sendMessage(rtc_g.chat_id, "The sensor's battery is low! Need charging. Turning off", "");
-    ft_go_to_sleep(DEAD_BATTERY_SLEEP);
+    go_to_sleep(DEAD_BATTERY_SLEEP);
 }
 
-bool ft_charging_detection(void)
+bool charging_detection(void)
 {
     uint32_t start_time;
     uint32_t end_time;
@@ -27,7 +27,7 @@ bool ft_charging_detection(void)
     start_time = millis();
     while (rtc_g.temp > 40.00)
     {
-        ft_temperature_check();
+        temperature_check();
     }
     end_time = millis() - start_time;
     
@@ -55,7 +55,7 @@ bool ft_charging_detection(void)
     return (true);
 }
 
-void  ft_battery_check(void)
+void  battery_check(void)
 {
     int8_t   i;
     uint16_t battery;

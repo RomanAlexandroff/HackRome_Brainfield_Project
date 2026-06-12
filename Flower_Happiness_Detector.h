@@ -49,34 +49,34 @@
 # define NEED_WATER              202
 # define DRYING_OUT              203
 
-inline void      ft_ota_init(void) __attribute__((always_inline));
-inline void      ft_ota_waiting_loop(void) __attribute__((always_inline));
-void             ft_go_to_sleep(uint64_t time_in_millis);
-void             ft_low_battery_handle(void);
-bool             ft_charging_detection(void);
-void             ft_battery_check(void);
-static void      ft_moisture_sensor(int8_t status);
-void             ft_moisture_check(void);
-static void      ft_temperature_sensor(int8_t status);
-static void      ft_temperature_calibration(void);
-void             ft_temperature_check(void);
-void IRAM_ATTR   ft_temp_sensor_init(void);
-void IRAM_ATTR   ft_react(void);
-bool IRAM_ATTR   ft_get_time(void);
-int IRAM_ATTR    ft_how_moist(void);
-void IRAM_ATTR   ft_notify_user(void);
-static void      ft_reply_machine(String text);
-static void      ft_new_messages(short message_count);
-void IRAM_ATTR   ft_telegram_check(void);
-unsigned int     ft_time_till_wakeup(void);
-short IRAM_ATTR  ft_write_spiffs_file(const char* file_name, String input);
-String IRAM_ATTR ft_read_spiffs_file(const char* file_name);
-void IRAM_ATTR   ft_files_restore(void);
-int IRAM_ATTR    ft_wifi_connect(void);
-void IRAM_ATTR   ft_adc_init(void);
-void IRAM_ATTR   ft_wifi_init(void);
-void IRAM_ATTR   ft_spiffs_init(void);
-void IRAM_ATTR   ft_serial_init(void);
+inline void      ota_init(void) __attribute__((always_inline));
+inline void      ota_waiting_loop(void) __attribute__((always_inline));
+void             go_to_sleep(uint64_t time_in_millis);
+void             low_battery_handle(void);
+bool             charging_detection(void);
+void             battery_check(void);
+static void      moisture_sensor(int8_t status);
+void             moisture_check(void);
+static void      temperature_sensor(int8_t status);
+static void      temperature_calibration(void);
+void             temperature_check(void);
+void IRAM_ATTR   temp_sensor_init(void);
+void IRAM_ATTR   react(void);
+bool IRAM_ATTR   get_time(void);
+int IRAM_ATTR    how_moist(void);
+void IRAM_ATTR   notify_user(void);
+static void      reply_machine(String text);
+static void      new_messages(short message_count);
+void IRAM_ATTR   telegram_check(void);
+unsigned int     time_till_wakeup(void);
+short IRAM_ATTR  write_spiffs_file(const char* file_name, String input);
+String IRAM_ATTR read_spiffs_file(const char* file_name);
+void IRAM_ATTR   files_restore(void);
+int IRAM_ATTR    wifi_connect(void);
+void IRAM_ATTR   adc_init(void);
+void IRAM_ATTR   wifi_init(void);
+void IRAM_ATTR   spiffs_init(void);
+void IRAM_ATTR   serial_init(void);
 
 # include "ota.h"                                                   // contains inline functions. It has to be here! 
 

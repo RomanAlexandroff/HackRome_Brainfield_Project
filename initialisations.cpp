@@ -12,7 +12,7 @@
 
 #include "Flower_Happiness_Detector.h"
 
-void IRAM_ATTR  ft_serial_init(void)
+void IRAM_ATTR  serial_init(void)
 {
     uint8_t i;
     
@@ -27,7 +27,7 @@ void IRAM_ATTR  ft_serial_init(void)
     DEBUG_PRINTF("\n\nDEVICE START\nversion %s\n\n", String(SOFTWARE_VERSION));
 }
 
-void IRAM_ATTR  ft_spiffs_init(void)
+void IRAM_ATTR  spiffs_init(void)
 {
     short i;
 
@@ -41,20 +41,20 @@ void IRAM_ATTR  ft_spiffs_init(void)
     else
     {
         DEBUG_PRINTF("\n[FILE SYSTEM] SPIFFS is successfully initialised.\n", "");
-        ft_files_restore();
+        files_restore();
         return;
     }
     DEBUG_PRINTF("\n[FILE SYSTEM] SPIFFS was not initialised. Reading and Writing data is unavailable this session.\n", "");
 }
 
-int IRAM_ATTR ft_wifi_connect(void)
+int IRAM_ATTR wifi_connect(void)
 {
     if(wifiMulti.run() != WL_CONNECTED)
         return (wifiMulti.run());
     return (WL_CONNECTED);
 }
 
-void IRAM_ATTR  ft_wifi_init(void)
+void IRAM_ATTR  wifi_init(void)
 {
     WiFi.mode(WIFI_STA);
     WiFi.persistent(true);
@@ -64,14 +64,14 @@ void IRAM_ATTR  ft_wifi_init(void)
     wifiMulti.addAP(SSID3, PASSWORD3);
 }
 
-void IRAM_ATTR  ft_adc_init(void)
+void IRAM_ATTR  adc_init(void)
 {
     adc1_config_width(ADC_WIDTH_12Bit);
     adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_11db);
     adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_11db);
 }
 
-void IRAM_ATTR ft_temp_sensor_init(void)
+void IRAM_ATTR temp_sensor_init(void)
 {
     temp_sensor_config_t  temp_sensor;
 

@@ -12,7 +12,7 @@
 
 #include "Flower_Happiness_Detector.h"
 
-bool IRAM_ATTR  ft_get_time(void)
+bool IRAM_ATTR  get_time(void)
 {
     const char* ntp_server PROGMEM = "pool.ntp.org";
     const long  gmt_offset_sec = TIME_ZONE * 3600;
@@ -26,7 +26,7 @@ bool IRAM_ATTR  ft_get_time(void)
     got_connection = 0;
     while (got_connection != WL_CONNECTED && i <= 5)
     {
-        got_connection = ft_wifi_connect();
+        got_connection = wifi_connect();
         i++;
         DEBUG_PRINTF("Establishing Wi-Fi connection, try #%d\n", i);
         delay(1000);
@@ -65,7 +65,7 @@ bool IRAM_ATTR  ft_get_time(void)
     return (true);
 }
 
-unsigned int  ft_time_till_wakeup(void)
+unsigned int  time_till_wakeup(void)
 {
     const uint8_t wakeup_hour[] = {8, 10, 12, 14, 16, 18, 20};
     uint8_t       i;
