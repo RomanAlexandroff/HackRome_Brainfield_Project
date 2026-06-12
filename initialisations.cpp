@@ -32,19 +32,23 @@ void IRAM_ATTR  spiffs_init(void)
     short i;
 
     i = 3;
-    if (!LittleFS.begin(true) && i)
+    while (!LittleFS.begin(true) && i)
     {
         DEBUG_PRINTF("\n[FILE SYSTEM] Failed to initialise SPIFFS. Retrying...\n", "");
         delay(1000);
         i--;
     }
+    if (!i)
+    {
+        DEBUG_PRINTF("\n[FILE SYSTEM] SPIFFS was not initialised. Reading and Writing data is unavailable this session.\n", "");
+        return ;
+    }
     else
     {
         DEBUG_PRINTF("\n[FILE SYSTEM] SPIFFS is successfully initialised.\n", "");
         files_restore();
-        return;
     }
-    DEBUG_PRINTF("\n[FILE SYSTEM] SPIFFS was not initialised. Reading and Writing data is unavailable this session.\n", "");
+    
 }
 
 int IRAM_ATTR wifi_connect(void)
