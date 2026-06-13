@@ -85,7 +85,7 @@ function App() {
       })
       .catch(() => {
         if (isMounted) {
-          setError("Brainyard could not load local vineyard data.");
+          setError("Brainyard could not load vineyard data from the backend.");
         }
       })
       .finally(() => {
@@ -97,6 +97,22 @@ function App() {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      vineyardService
+        .getDashboardData()
+        .then((data) => {
+          setDashboardData(data);
+          setError("");
+        })
+        .catch(() => {
+          setError("Brainyard could not refresh live vineyard data.");
+        });
+    }, 7000);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   const selectedPlot = useMemo(

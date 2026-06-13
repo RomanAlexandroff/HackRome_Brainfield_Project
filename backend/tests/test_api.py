@@ -34,10 +34,23 @@ def test_dashboard_shape_matches_frontend_contract():
         "irrigationMarkers",
     }
     assert data["vineyard"]["name"] == "Tenuta Verde"
+    assert data["vineyard"]["location"] == "Tuscia, Viterbo, Italy"
     assert len(data["plots"]) >= 3
     assert data["plots"][0]["id"] == "plot-a"
     assert data["sensors"][0]["type"] == "Soil moisture"
     assert data["alerts"]
+
+
+def test_weather_endpoint_returns_viterbo_context():
+    response = client.get("/api/weather")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["location"] == "Tuscia, Viterbo, Italy"
+    assert data["source"] in {"open-meteo", "fallback"}
+    assert "temperature" in data
+    assert "rain_next_72h" in data
+    assert data["forecast_summary"]
 
 
 def test_sensor_reading_updates_dashboard_plot_sensor_and_latest_reading():

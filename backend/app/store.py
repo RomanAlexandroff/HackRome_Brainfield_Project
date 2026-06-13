@@ -16,6 +16,7 @@ from .models import (
     now_iso,
 )
 from .openai_service import generate_study_insight
+from .weather_service import WeatherSnapshot, fetch_viterbo_weather
 
 
 class VineyardStore:
@@ -26,6 +27,8 @@ class VineyardStore:
         self._study_counter = 1
 
     def get_dashboard(self) -> DashboardData:
+        weather = fetch_viterbo_weather()
+        self._apply_weather_context(weather)
         return self.dashboard
 
     def get_latest_sensor_reading(self) -> Optional[SensorReading]:
@@ -144,6 +147,86 @@ class VineyardStore:
             ),
         )
         return study
+
+    def _apply_weather_context(self, weather: WeatherSnapshot) -> None:
+        self.dashboard.vineyard.location = weather.location
+
+        plot_offsets = {
+            "plot-a": (0.0, 0),
+            "plot-b": (0.8, -3),
+            "plot-c": (-0.4, 4),
+        }
+        for plot in self.dashboard.plots:
+            temperature_offset, humidity_offset = plot_offsets.get(plot.id, (0.0, 0))
+            plot.airTemperature = round(weather.temperature + temperature_offset, 1)
+            plot.airHumidity = max(0, min(100, weather.humidity + humidity_offset))
+
+        latest_by_plot = {}
+        for measurement in self.dashboard.measurements:
+            latest_by_plot[measurement.plotId] = measurement
+        for plot_id, measurement in latest_by_plot.items():
+            plot = next((item for item in self.dashboard.plots if item.id == plot_id), None)
+            if plot:
+                measurement.airTemperature = plot.airTemperature
+                measurement.airHumidity = plot.airHumidity
+                measurement.rainfall = weather.rainfall
+
+        for sensor in self.dashboard.sensors:
+            plot = next((item for item in self.dashboard.plots if item.id == sensor.plotId), None)
+            if not plot:
+                continue
+            if sensor.type == "Air temperature":
+                sensor.lastReading = plot.airTemperature
+            elif sensor.type == "Air humidity":
+                sensor.lastReading = plot.airHumidity
+            elif sensor.type == "Rain gauge":
+                sensor.lastReading = weather.rainfall
+
+        self._upsert_weather_alerts(weather)
+
+    def _upsert_weather_alerts(self, weather: WeatherSnapshot) -> None:
+        self.dashboard.alerts = [
+            alert
+            for alert in self.dashboard.alerts
+            if alert.id not in {"alert-weather-rain", "alert-weather-dry-stress", "alert-weather-mildew"}
+        ]
+        timestamp = now_iso()
+        dry_plots = [plot for plot in self.dashboard.plots if plot.soilMoisture < 25]
+        if weather.rain_next_12h >= 5:
+            self.dashboard.alerts.insert(
+                0,
+                Alert(
+                    id="alert-weather-rain",
+                    title="Rain expected near Viterbo",
+                    description=f"Open-Meteo forecasts {weather.rain_next_12h:.1f} mm in the next 12 hours. Consider delaying irrigation unless live soil moisture remains critical.",
+                    severity="info",
+                    timestamp=timestamp,
+                ),
+            )
+        elif dry_plots and weather.rain_next_72h < 3 and weather.max_temperature_next_72h >= 28:
+            driest_plot = min(dry_plots, key=lambda item: item.soilMoisture)
+            self.dashboard.alerts.insert(
+                0,
+                Alert(
+                    id="alert-weather-dry-stress",
+                    plotId=driest_plot.id,
+                    title="Dry forecast increases irrigation priority",
+                    description=f"{driest_plot.name} is at {driest_plot.soilMoisture:.1f}% soil moisture, Tuscia forecast rain is only {weather.rain_next_72h:.1f} mm over 72 hours, and peak temperature may reach {weather.max_temperature_next_72h:.1f}°C.",
+                    severity="warning",
+                    timestamp=timestamp,
+                ),
+            )
+        if weather.humidity >= 75 and weather.temperature >= 18:
+            self.dashboard.alerts.insert(
+                0,
+                Alert(
+                    id="alert-weather-mildew",
+                    title="Weather pattern can raise mildew risk",
+                    description=f"Relative humidity is {weather.humidity}% around Viterbo with mild temperatures. Schedule canopy inspection if leaves remain wet.",
+                    severity="warning",
+                    timestamp=timestamp,
+                ),
+            )
 
     def _plot_label(self, plot_id: str) -> str:
         plot = next((item for item in self.dashboard.plots if item.id == plot_id), None)

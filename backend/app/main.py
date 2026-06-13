@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Optional
 
 from fastapi import FastAPI
@@ -7,6 +8,7 @@ from .mock_data import fresh_dashboard
 from .models import DashboardData, FieldEvent, FieldEventDraft, RawSensorPayload, SensorReading, Study, StudyDraft
 from .openai_service import openai_enabled
 from .store import VineyardStore
+from .weather_service import fetch_viterbo_weather
 
 app = FastAPI(
     title="Brainyard Backend",
@@ -62,6 +64,11 @@ def health() -> dict:
 @app.get("/api/dashboard", response_model=DashboardData)
 def get_dashboard() -> DashboardData:
     return store.get_dashboard()
+
+
+@app.get("/api/weather")
+def get_weather() -> dict:
+    return asdict(fetch_viterbo_weather())
 
 
 @app.get("/api/sensor/latest", response_model=Optional[SensorReading])
