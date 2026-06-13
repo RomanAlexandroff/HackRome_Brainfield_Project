@@ -65,6 +65,20 @@ def test_sensor_reading_updates_dashboard_plot_sensor_and_latest_reading():
     assert dashboard["measurements"][-1]["soilMoisture"] == 44.5
 
 
+def test_raw_esp32_sensor_endpoint_maps_firmware_payload():
+    response = client.post(
+        "/sensor",
+        json={"temperature": 27.4, "moisture": 2245, "battery": 1238},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["sensorId"] == "soil-01"
+    assert data["plotId"] == "plot-a"
+    assert 49 <= data["soilMoisture"] <= 51
+    assert 49 <= data["batteryLevel"] <= 51
+
+
 def test_create_field_event_returns_frontend_compatible_event():
     payload = {
         "plotId": "plot-b",

@@ -185,5 +185,11 @@ class SensorReading(CamelModel):
     timestamp: Optional[str] = None
 
 
+class RawSensorPayload(CamelModel):
+    temperature: float
+    moisture: int
+    battery: int
+
+
 def now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")

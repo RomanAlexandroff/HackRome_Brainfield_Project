@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .mock_data import fresh_dashboard
-from .models import DashboardData, FieldEvent, FieldEventDraft, SensorReading, Study, StudyDraft
+from .models import DashboardData, FieldEvent, FieldEventDraft, RawSensorPayload, SensorReading, Study, StudyDraft
 from .openai_service import openai_enabled
 from .store import VineyardStore
 
@@ -23,6 +23,31 @@ app.add_middleware(
 )
 
 store = VineyardStore(fresh_dashboard())
+
+
+def _clamp(value: float, minimum: float, maximum: float) -> float:
+    return max(minimum, min(maximum, value))
+
+
+def moisture_raw_to_percent(raw_moisture: int) -> float:
+    # Same conversion used by the ESP32 firmware how_moist() helper.
+    return round(_clamp(((3180 - raw_moisture) / 1870.0) * 100.0, 0, 100), 1)
+
+
+def battery_raw_to_percent(raw_battery: int) -> int:
+    # Hackathon-friendly approximation: 875 is the firmware low-battery threshold.
+    return int(round(_clamp(((raw_battery - 875) / (1600 - 875)) * 100.0, 0, 100)))
+
+
+def raw_payload_to_sensor_reading(payload: RawSensorPayload) -> SensorReading:
+    battery_level = battery_raw_to_percent(payload.battery)
+    return SensorReading(
+        sensorId="soil-01",
+        plotId="plot-a",
+        soilMoisture=moisture_raw_to_percent(payload.moisture),
+        batteryLevel=battery_level,
+        status="Low battery" if battery_level < 25 else "Online",
+    )
 
 
 @app.get("/health")
@@ -47,6 +72,12 @@ def get_latest_sensor_reading():
 @app.post("/api/sensor/readings", response_model=SensorReading)
 def ingest_sensor_reading(reading: SensorReading) -> SensorReading:
     return store.ingest_sensor_reading(reading)
+
+
+@app.post("/sensor", response_model=SensorReading)
+def ingest_raw_esp32_sensor_payload(payload: RawSensorPayload) -> SensorReading:
+    """Compatibility endpoint for the current ESP32 firmware post_to_database.cpp."""
+    return store.ingest_sensor_reading(raw_payload_to_sensor_reading(payload))
 
 
 @app.post("/api/field-events", response_model=FieldEvent)

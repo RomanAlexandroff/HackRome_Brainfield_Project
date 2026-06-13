@@ -90,6 +90,29 @@ curl -X POST http://127.0.0.1:8000/api/sensor/readings \
   }'
 ```
 
+### `POST /sensor`
+
+Compatibility endpoint for the current ESP32 firmware in `post_to_database.cpp`.
+
+The firmware sends raw values:
+
+```json
+{
+  "temperature": 27.4,
+  "moisture": 2245,
+  "battery": 1238
+}
+```
+
+The backend maps them to the dashboard contract:
+
+- `sensorId`: `soil-01`
+- `plotId`: `plot-a`
+- `soilMoisture`: converted with the same formula used by `how_moist()` in the firmware
+- `batteryLevel`: approximate raw-to-percent conversion for the hackathon demo
+
+When the ESP32 is on the same network as the backend machine, run FastAPI with `--host 0.0.0.0` and point the firmware URL to the machine LAN IP.
+
 ### `GET /api/sensor/latest`
 
 Returns the latest ingested live sensor reading, or `null` if none was sent in this server session.
