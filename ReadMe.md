@@ -8,9 +8,10 @@ Our vision is to create an **off-grid wireless mesh network of environmental sen
 
 ## Team
 
-* Susanna Kayed  [linkedin](https://www.linkedin.com/in/susanna-kayed/)
-* Roman Alexandrov  [linkedin](https://www.linkedin.com/in/roman-alexandrov-a75b89195/)
-* Carlotta Cruciani  [linkedin](https://www.linkedin.com/in/carlotta-cruciani-6a8604358/)
+The project was proudly built by the students of [42 Roma ELIS](https://42roma.it)
+* Susanna Kayed — backend wizard  [linkedin](https://www.linkedin.com/in/susanna-kayed/)
+* Roman Alexandrov — hardware/firmware blacksmith   [linkedin](https://www.linkedin.com/in/roman-alexandrov-a75b89195/)
+* Carlotta Cruciani — frontend genius  [linkedin](https://www.linkedin.com/in/carlotta-cruciani-6a8604358/)
 
 <br>
 
